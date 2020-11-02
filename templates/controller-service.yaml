@@ -1,0 +1,49 @@
+{{- if eq .Values.deploymentType "individual" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: toggly-controller
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: toggly
+    app.kubernetes.io/name: toggly
+    app.kubernetes.io/component: toggly-controller
+  annotations:
+    toggly.io/api-spec: https://github.com/pabloubal/toggly-controller
+    toggly.io/api-type: rest
+spec:
+  ports:
+  - name: http
+    protocol: TCP
+    port: {{.Values.controller.port}}
+    targetPort: api-port
+  selector:
+    app.kubernetes.io/name: toggly
+    app.kubernetes.io/instance: toggly-controller
+  type: NodePort
+{{- end}}
+---
+{{- if eq .Values.deploymentType "all-in-one" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: toggly-controller
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: toggly
+    app.kubernetes.io/name: toggly
+    app.kubernetes.io/component: toggly-controller
+  annotations:
+    toggly.io/api-spec: https://github.com/pabloubal/toggly-controller
+    toggly.io/api-type: rest
+spec:
+  ports:
+  - name: http
+    protocol: TCP
+    port: {{.Values.controller.port}}
+    targetPort: api-port
+  selector:
+    app.kubernetes.io/name: toggly
+    app.kubernetes.io/component: all-in-one
+  type: NodePort
+{{- end}}

@@ -1,0 +1,40 @@
+namespace: default
+
+ui:
+  version: 0.0.1
+  port: 80
+  ingress:
+    host: toggly.test
+    path: /ui
+  ##config => configure values for ui's /etc/toggly/ui/conf/config.json
+  #config:
+  #  controllerUrl: /controller/api
+
+controller:
+  version: 0.0.1
+  port: 4000
+  ingress:
+    host: toggly.test
+    path: /controller
+  ##config => configure values for controller's /etc/toggly/controller/conf/config.json
+  #config:
+    #storeProvider. Determines 
+    #storeProvider: inMemory #db|inMemory|redis|mysql
+    
+    ##mysql. if storeProvider=mysql, then need to provide the corresponding connection information
+    #mysql: |
+    #  host: localhost
+    #  port: 3306
+    #  ....
+
+
+##deploymentType. 
+## - all-in-one: creates one pod with all the necessary containers in it.
+## - individual: creates one pod per application.
+deploymentType: all-in-one
+
+##DEFINE ENVIRONMENT VARIABLES IF NEEDED
+# podEnvironment:
+#   env:
+#   - name: SAMPLE_ENV_VARIABLE
+#     value: TEST

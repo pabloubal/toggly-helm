@@ -1,0 +1,47 @@
+{{- if eq .Values.deploymentType "individual" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: toggly-controller
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: toggly
+    app.kubernetes.io/name: toggly
+    app.kubernetes.io/component: toggly-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: toggly
+      app.kubernetes.io/component: toggly-controller
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      name: toggly-controller
+      labels:
+        app: toggly
+        app.kubernetes.io/name: toggly
+        app.kubernetes.io/component: toggly-controller
+    spec:
+      containers:
+        - name: toggly-controller
+          image: pabloubal/toggly-controller:{{.Values.controller.version}}
+          imagePullPolicy: Always
+        {{- if .Values.podEnvironment }}
+          {{- toYaml .Values.podEnvironment | nindent 10 }}
+        {{- end }}
+          ports:
+            - name: controller-port
+              containerPort: {{.Values.controller.port}}
+          volumeMounts:
+          - name: controller-config
+            mountPath: /usr/src/toggly-controller/config.json
+      volumes:
+        - name: controller-config
+          configMap:
+            name: controller-config
+{{- end}}

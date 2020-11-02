@@ -1,0 +1,71 @@
+{{- if eq .Values.deploymentType "all-in-one" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: toggly
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: toggly
+    app.kubernetes.io/name: toggly
+    app.kubernetes.io/component: all-in-one
+    app.kubernetes.io/version: {{.Values.controller.version}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: toggly
+      app.kubernetes.io/component: all-in-one
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      name: toggly
+      labels:
+        app: toggly
+        app.kubernetes.io/name: toggly
+        app.kubernetes.io/component: all-in-one
+        app.kubernetes.io/version: {{.Values.controller.version}}
+    spec:
+      containers:
+        - name: toggly-controller
+          image: pabloubal/toggly-controller:{{.Values.controller.version}}
+          imagePullPolicy: Always
+        {{- if .Values.controller.podEnvironment }}
+          {{- toYaml .Values.controller.podEnvironment | nindent 10 }}
+        {{- end }}
+          ports:
+            - name: api-port
+              containerPort: {{.Values.controller.port}}
+          volumeMounts:
+          - name: toggly-controller-config
+            mountPath: /etc/toggly/controller/conf
+            #mountPath: /usr/src/app/configuration/configuration.yaml
+            #subPath: configuration.yaml
+        - name: toggly-ui
+          image: pabloubal/toggly-ui:{{.Values.ui.version}}
+          imagePullPolicy: Always
+        {{- if .Values.ui.podEnvironment }}
+          {{- toYaml .Values.ui.podEnvironment | nindent 10 }}
+        {{- end }}
+          ports:
+            - name: ui-port
+              containerPort: {{.Values.ui.port}}
+          volumeMounts:
+          {{- if .Values.ui.config }}
+          - name: toggly-ui-config
+            mountPath: /etc/toggly/ui/conf
+          {{- end }}
+      volumes:
+        - name: toggly-controller-config
+          configMap:
+            name: toggly-controller-config
+        - name: toggly-ui-config
+          configMap:
+            name: toggly-ui-config
+        - name: toggly-ui-ingress-config
+          configMap:
+            name: toggly-ui-config-ingress
+{{- end}}

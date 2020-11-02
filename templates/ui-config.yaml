@@ -1,0 +1,17 @@
+{{- if .Values.ui.config }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: toggly-ui-config
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: toggly
+    app.kubernetes.io/name: toggly-ui
+data:
+  config.json: |
+{{- with .Values.ui.config }}
+    {
+      "controllerUrl": {{ .controllerUrl | default "/controller/api" | quote }}
+    }
+{{- end}}
+{{- end}}

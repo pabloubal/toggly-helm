@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: toggly-ui
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: toggly
+    app.kubernetes.io/name: toggly
+    app.kubernetes.io/component: toggly-ui
+  annotations:
+    toggly.io/api-spec: https://github.com/pabloubal/toggly-ui
+    toggly.io/api-type: rest
+    # nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+    - host: {{ .Values.ui.ingress.host }}
+      http:
+        paths:
+          # - path: {{ .Values.ui.ingress.path }}(/|$)(.*)
+          - path: {{ .Values.ui.ingress.path }}
+            backend:
+              serviceName: toggly-ui
+              servicePort: http
