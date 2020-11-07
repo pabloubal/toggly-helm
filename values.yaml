@@ -1,7 +1,7 @@
 namespace: default
 
 ui:
-  version: 0.0.1
+  version: 0.1.0
   port: 80
   ingress:
     host: toggly.test
@@ -11,7 +11,7 @@ ui:
   #  controllerUrl: /controller/api
 
 controller:
-  version: 0.0.1
+  version: 0.1.0
   port: 4000
   ingress:
     host: toggly.test
